@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
+const openaiRoutes = require('./routes/openaiRoutes');
 const youtubeRoutes = require('./routes/youtubeRoutes');
 const playhtRoutes = require('./routes/playhtRoutes');
 const { getVideoCaptions, getCaptionText, saveCaption, getCaption, getChatResponse } = require('./services/youtubeService');
@@ -24,6 +25,9 @@ app.use('/api/users', userRoutes);
 
 // 유튜브 라우트
 app.use('/api/youtube', youtubeRoutes);
+
+// OpenAI 라우트
+app.use('/api/openai', openaiRoutes);
 
 // PlayHT 라우트
 app.use('/api/playht', playhtRoutes);

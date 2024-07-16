@@ -1,21 +1,24 @@
-const { getVideoCaption, saveCaption, getCaption } = require('../api/youtube');
-const Caption = require('../models/Caption');
+const { saveCaptionToDatabase, getCaptionFromDatabase } = require('../services/youtubeService');
 
+// 자막 텍스트를 데이터베이스에 저장
+const saveCaption = async (req, res) => {
+    const { videoId, captionId, text } = req.body;
 
-// 자막 텍스트를 데이터베이스에 저장하는 함수
-const saveCaption = async (videoId, captionId, text) => {
-    const newCaption = new Caption({ videoId, captionId, text });
-    await newCaption.save();
-    console.log('Caption saved:', newCaption);
+    try {
+        await saveCaptionToDatabase(videoId, captionId, text);
+        res.status(201).send('Caption saved successfully.');
+    } catch (error) {
+        console.error('Error saving caption:', error);
+        res.status(500).send('Server error');
+    }
 };
 
-
-// 자막 텍스트를 가져오는 API
-const fetchCaption = async (req, res) => {
+// 데이터베이스에서 자막 텍스트를 가져오기
+const fetchCaptionFromDatabase = async (req, res) => {
     const videoId = req.params.videoId;
 
     try {
-        const caption = await Caption.findOne({ videoId });
+        const caption = await getCaptionFromDatabase(videoId);
         if (!caption) {
             return res.status(404).send('No captions found for this video.');
         }
@@ -26,7 +29,4 @@ const fetchCaption = async (req, res) => {
     }
 };
 
-module.exports = { saveCaption, fetchCaption };
-
-
-
+module.exports = { fetchCaptionFromDatabase,  saveCaption };

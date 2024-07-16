@@ -2,7 +2,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const generateVoice = async (text, voice) => {
+const generateVoiceFromText = async (text, voice) => {
     let voiceUrl;
     
     if (voice === 'hagrid') {
@@ -35,4 +35,4 @@ const generateVoice = async (text, voice) => {
     }
 };
 
-module.exports = { generateVoice };
+module.exports = { generateVoiceFromText };

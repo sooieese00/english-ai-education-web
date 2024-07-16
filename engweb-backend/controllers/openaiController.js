@@ -1,25 +1,25 @@
-const {  getChatResponse } = require('../api/openai');
+const { getChatResponse } = require('../services/openaiService');
+const { fetchCaptionsFromApi, saveCaptionToDatabase, getCaptionFromDatabase } = require('../services/youtubeService');
 
 const fetchLearningExpressions = async (req, res) => {
     const videoId = req.params.videoId;
     const { expressionLevel, expressionNumber } = req.body;
 
     try {
-    
-        // 자막 가져오기
-        const videoCaptions = await getVideoCaptions(videoId);
-        if (videoCaptions.length === 0) {
-            return res.status(404).send('No captions found for this video.');
-        }
+    // 자막 가져오기
+    const videoCaptions = await fetchCaptionsFromApi(videoId);
+    if (videoCaptions.length === 0) {
+        return res.status(404).send('No captions found for this video.');
+    }
 
-        // 자막 텍스트 MongoDB에 저장하기
-        const captionId = videoCaptions[0].id;
-        const captionText = await getCaptionText(captionId);
-        await saveCaption(videoId, captionId, captionText);
+    // 자막 텍스트 MongoDB에 저장하기
+    const captionId = videoCaptions[0].id;
+    const captionText = videoCaptions[0].snippet.title; // 여기서 실제 자막 텍스트를 가져오는 로직을 추가해야 합니다
+    await saveCaptionToDatabase(videoId, captionId, captionText);
 
-         // 저장된 자막 텍스트 가져오기
-         const savedCaption = await getCaption(videoId);
-
+    // 저장된 자막 텍스트 가져오기
+    const savedCaption = await getCaptionFromDatabase(videoId);
+        
         // ChatGPT API에 자막과 설정 전달하여 학습할 표현 가져오기
         const prompt = `
 현재 나는 부족한 회화 실력을 높이기 위해서 내가 좋아하는 유튜브 영상에서 나온 표현으로 공부하고 있어.
